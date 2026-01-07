@@ -33,6 +33,15 @@ final class ChatViewModel {
         notificationService.isAuthorized
     }
 
+    var serverURL: String {
+        get { webSocket.serverURLString }
+        set { webSocket.serverURLString = newValue }
+    }
+
+    var serverHost: String {
+        webSocket.serverHost
+    }
+
     private func setupWebSocket() {
         webSocket.onMessage = { [weak self] message in
             self?.handleMessage(message)

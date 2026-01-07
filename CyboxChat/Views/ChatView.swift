@@ -52,7 +52,7 @@ struct ChatView: View {
                 .padding()
                 .background(Color(.systemBackground))
             }
-            .navigationTitle("chat.cybox.io")
+            .navigationTitle(viewModel.serverHost)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {

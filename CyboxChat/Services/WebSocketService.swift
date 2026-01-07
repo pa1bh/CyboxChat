@@ -4,7 +4,17 @@ import Foundation
 final class WebSocketService: NSObject {
     private var webSocket: URLSessionWebSocketTask?
     private var session: URLSession!
-    private let serverURL = URL(string: "wss://chat.cybox.io/ws")!
+
+    static let defaultServerURL = "wss://chat.cybox.io/ws"
+
+    var serverURLString: String {
+        get { UserDefaults.standard.string(forKey: "serverURL") ?? Self.defaultServerURL }
+        set { UserDefaults.standard.set(newValue, forKey: "serverURL") }
+    }
+
+    private var serverURL: URL {
+        URL(string: serverURLString) ?? URL(string: Self.defaultServerURL)!
+    }
 
     var isConnected = false
     var onMessage: ((IncomingMessage) -> Void)?

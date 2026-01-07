@@ -4,6 +4,8 @@ struct SettingsView: View {
     @Bindable var viewModel: ChatViewModel
     @State private var newName = ""
     @State private var showingNameAlert = false
+    @State private var newServerURL = ""
+    @State private var showingServerAlert = false
 
     private var appVersion: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "?"
@@ -55,6 +57,18 @@ struct SettingsView: View {
 
                 // Connection Section
                 Section("Connection") {
+                    HStack {
+                        Text("Server")
+                        Spacer()
+                        Text(viewModel.serverHost)
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Button("Change Server") {
+                        newServerURL = viewModel.serverURL
+                        showingServerAlert = true
+                    }
+
                     HStack {
                         Text("Status")
                         Spacer()
@@ -125,12 +139,6 @@ struct SettingsView: View {
                 // About Section
                 Section("About") {
                     HStack {
-                        Text("Server")
-                        Spacer()
-                        Text("chat.cybox.io")
-                            .foregroundStyle(.secondary)
-                    }
-                    HStack {
                         Text("Version")
                         Spacer()
                         Text(appVersion)
@@ -147,6 +155,19 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("Enter your new display name (2-32 characters)")
+            }
+            .alert("Change Server", isPresented: $showingServerAlert) {
+                TextField("Server URL", text: $newServerURL)
+                    .autocorrectionDisabled()
+                    .textInputAutocapitalization(.never)
+                Button("Cancel", role: .cancel) {}
+                Button("Save") {
+                    viewModel.serverURL = newServerURL
+                    viewModel.disconnect()
+                    viewModel.connect()
+                }
+            } message: {
+                Text("Enter WebSocket URL (e.g., wss://example.com/ws)")
             }
         }
     }
