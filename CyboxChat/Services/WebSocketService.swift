@@ -23,7 +23,10 @@ final class WebSocketService: NSObject {
 
     override init() {
         super.init()
-        session = URLSession(configuration: .default, delegate: self, delegateQueue: .main)
+        let config = URLSessionConfiguration.default
+        config.timeoutIntervalForResource = 5  // 5 seconds to connect
+        config.timeoutIntervalForRequest = 5
+        session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
     }
 
     func connect() {
