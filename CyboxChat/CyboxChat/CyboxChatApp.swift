@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct HelloiOSApp: App {
+struct CyboxChatApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()

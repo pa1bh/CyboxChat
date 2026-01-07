@@ -1,4 +1,4 @@
-# HelloiOS
+# Cybox Chat
 
 A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), built with SwiftUI.
 
@@ -10,12 +10,13 @@ A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), bui
 - **Server status** - View uptime, user count, and performance metrics
 - **Auto-reconnect** - Automatically reconnects on connection loss
 - **Tab navigation** - Clean UI with Chat, Users, and Settings tabs
+- **Push notifications** - Get notified of new messages (configurable)
 
 ## Screenshots
 
 ```
 ┌─────────────────────────────┐
-│         Chat                │
+│       Cybox Chat            │
 ├─────────────────────────────┤
 │  [System] User joined       │
 │  [Bob] Hello everyone!      │
@@ -38,7 +39,7 @@ A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), bui
 
 ### Option 1: Xcode
 
-1. Open `HelloiOS/HelloiOS.xcodeproj`
+1. Open `CyboxChat/CyboxChat.xcodeproj`
 2. Select a simulator (e.g., iPhone 16 Pro)
 3. Press `Cmd + R` to build and run
 
@@ -46,28 +47,29 @@ A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), bui
 
 ```bash
 # Build
-xcodebuild -project HelloiOS/HelloiOS.xcodeproj \
-  -target HelloiOS \
+xcodebuild -project CyboxChat/CyboxChat.xcodeproj \
+  -target CyboxChat \
   -sdk iphonesimulator \
   -configuration Debug build
 
 # Install and run on booted simulator
-xcrun simctl install booted HelloiOS/build/Debug-iphonesimulator/HelloiOS.app
-xcrun simctl launch booted com.example.HelloiOS
+xcrun simctl install booted CyboxChat/build/Debug-iphonesimulator/CyboxChat.app
+xcrun simctl launch booted com.cybox.cyboxchat
 ```
 
 ## Project Structure
 
 ```
-HelloiOS/
-├── HelloiOS.xcodeproj/
-└── HelloiOS/
-    ├── HelloiOSApp.swift          # App entry point
+CyboxChat/
+├── CyboxChat.xcodeproj/
+└── CyboxChat/
+    ├── CyboxChatApp.swift         # App entry point
     ├── ContentView.swift          # TabView container
     ├── Models/
     │   └── ChatModels.swift       # Protocol message types
     ├── Services/
-    │   └── WebSocketService.swift # WebSocket connection
+    │   ├── WebSocketService.swift # WebSocket connection
+    │   └── NotificationService.swift # Local notifications
     ├── ViewModels/
     │   └── ChatViewModel.swift    # State management
     └── Views/
@@ -110,6 +112,7 @@ Connects to `wss://chat.cybox.io/ws` using JSON messages:
 - **Change name**: Go to Settings → Change Name
 - **View users**: Tap the Users tab
 - **Server status**: Settings → Refresh Status
+- **Notifications**: Settings → Enable Notifications
 
 ## License
 
