@@ -9,6 +9,11 @@ final class WebSocketService: NSObject {
     var isConnected = false
     var onMessage: ((IncomingMessage) -> Void)?
     var onConnectionChange: ((Bool) -> Void)?
+    var onConnectionError: ((String) -> Void)?
+
+    var serverHost: String {
+        serverURL.host ?? "unknown"
+    }
 
     private var reconnectAttempts = 0
     private let maxReconnectAttempts = 5
@@ -139,5 +144,17 @@ extension WebSocketService: URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         print("WebSocket closed: \(closeCode)")
         handleDisconnect()
+    }
+
+    func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
+        if let error = error {
+            print("WebSocket connection error: \(error.localizedDescription)")
+            if !hasConnectedOnce && !intentionalDisconnect {
+                onConnectionError?(serverHost)
+            }
+            webSocket = nil
+            isConnected = false
+            onConnectionChange?(false)
+        }
     }
 }

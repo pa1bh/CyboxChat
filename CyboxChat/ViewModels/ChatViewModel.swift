@@ -12,6 +12,7 @@ final class ChatViewModel {
     var isConnected: Bool = false
     var serverStatus: StatusMessage?
     var errorMessage: String?
+    var connectionError: String?
     var pingLatency: Int?  // in milliseconds
     private var pingStartTime: Date?
     var notificationsEnabled: Bool {
@@ -40,6 +41,7 @@ final class ChatViewModel {
         webSocket.onConnectionChange = { [weak self] connected in
             self?.isConnected = connected
             if connected {
+                self?.connectionError = nil
                 // Set initial name to get ackName with our identity
                 self?.webSocket.send(.setName(name: self?.currentName ?? "Anonymous"))
                 self?.requestUsers()
@@ -47,6 +49,10 @@ final class ChatViewModel {
                 // Clear users on disconnect
                 self?.users = []
             }
+        }
+
+        webSocket.onConnectionError = { [weak self] host in
+            self?.connectionError = "Could not connect to server \(host)"
         }
     }
 

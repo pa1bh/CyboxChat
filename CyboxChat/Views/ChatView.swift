@@ -64,6 +64,14 @@ struct ChatView: View {
                     ErrorBanner(message: error)
                 }
             }
+            .overlay {
+                if let connectionError = viewModel.connectionError, !viewModel.isConnected {
+                    ConnectionErrorView(message: connectionError) {
+                        viewModel.connectionError = nil
+                        viewModel.connect()
+                    }
+                }
+            }
         }
     }
 
@@ -102,6 +110,33 @@ struct ErrorBanner: View {
                 .clipShape(RoundedRectangle(cornerRadius: 8))
                 .padding()
             Spacer()
+        }
+    }
+}
+
+struct ConnectionErrorView: View {
+    let message: String
+    let onRetry: () -> Void
+
+    var body: some View {
+        ZStack {
+            Color(.systemBackground).opacity(0.95)
+
+            VStack(spacing: 16) {
+                Image(systemName: "wifi.slash")
+                    .font(.system(size: 48))
+                    .foregroundStyle(.secondary)
+
+                Text(message)
+                    .font(.headline)
+                    .multilineTextAlignment(.center)
+
+                Button("Retry") {
+                    onRetry()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+            .padding()
         }
     }
 }

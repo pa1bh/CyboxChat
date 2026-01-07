@@ -5,12 +5,14 @@
 set -e
 cd "$(dirname "$0")/.."
 
-# Get current version from project
-CURRENT_VERSION=$(grep -A1 'MARKETING_VERSION' CyboxChat.xcodeproj/project.pbxproj | grep -o '[0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?' | head -1)
-CURRENT_BUILD=$(grep -A1 'CURRENT_PROJECT_VERSION' CyboxChat.xcodeproj/project.pbxproj | grep -o '[0-9]\+' | head -1)
+# Get current version from project (handles both 1.0 and 1.0.0 formats)
+CURRENT_VERSION=$(grep 'MARKETING_VERSION' CyboxChat.xcodeproj/project.pbxproj | head -1 | sed 's/.*= *\([0-9.]*\);.*/\1/')
+CURRENT_BUILD=$(grep 'CURRENT_PROJECT_VERSION' CyboxChat.xcodeproj/project.pbxproj | head -1 | sed 's/.*= *\([0-9]*\);.*/\1/')
 
 # Parse version parts
 IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION"
+MAJOR=${MAJOR:-1}
+MINOR=${MINOR:-0}
 PATCH=${PATCH:-0}
 
 echo "Current version: $MAJOR.$MINOR.$PATCH (build $CURRENT_BUILD)"
@@ -43,12 +45,12 @@ esac
 
 NEW_VERSION="$MAJOR.$MINOR.$PATCH"
 
-# Update project.pbxproj
+# Update project.pbxproj (replace any version format)
 if [[ "$1" != "build" && -n "$1" ]]; then
-    sed -i '' "s/MARKETING_VERSION = [0-9]\+\.[0-9]\+\(\.[0-9]\+\)\?;/MARKETING_VERSION = $NEW_VERSION;/g" CyboxChat.xcodeproj/project.pbxproj
+    sed -i '' "s/MARKETING_VERSION = [0-9.]*;/MARKETING_VERSION = $NEW_VERSION;/g" CyboxChat.xcodeproj/project.pbxproj
     echo "Version bumped to: $NEW_VERSION"
 fi
 
-sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]\+;/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/g" CyboxChat.xcodeproj/project.pbxproj
+sed -i '' "s/CURRENT_PROJECT_VERSION = [0-9]*;/CURRENT_PROJECT_VERSION = $CURRENT_BUILD;/g" CyboxChat.xcodeproj/project.pbxproj
 
 echo "New version: $NEW_VERSION (build $CURRENT_BUILD)"
