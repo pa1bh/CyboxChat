@@ -13,6 +13,8 @@ final class WebSocketService: NSObject {
     private var reconnectAttempts = 0
     private let maxReconnectAttempts = 5
     private var reconnectTask: Task<Void, Never>?
+    private var intentionalDisconnect = false
+    private var hasConnectedOnce = false
 
     override init() {
         super.init()
@@ -22,19 +24,21 @@ final class WebSocketService: NSObject {
     func connect() {
         guard webSocket == nil else { return }
 
+        intentionalDisconnect = false
         webSocket = session.webSocketTask(with: serverURL)
         webSocket?.resume()
-        isConnected = true
-        reconnectAttempts = 0
-        onConnectionChange?(true)
+        // Don't set isConnected here - wait for delegate callback
         receiveMessage()
     }
 
     func disconnect() {
+        intentionalDisconnect = true
         reconnectTask?.cancel()
+        reconnectAttempts = maxReconnectAttempts // Prevent auto-reconnect
         webSocket?.cancel(with: .normalClosure, reason: nil)
         webSocket = nil
         isConnected = false
+        hasConnectedOnce = false
         onConnectionChange?(false)
     }
 
@@ -99,6 +103,12 @@ final class WebSocketService: NSObject {
     }
 
     private func attemptReconnect() {
+        // Don't reconnect if user intentionally disconnected or never connected
+        guard !intentionalDisconnect, hasConnectedOnce else {
+            print("Skipping reconnect: intentional=\(intentionalDisconnect), hasConnected=\(hasConnectedOnce)")
+            return
+        }
+
         guard reconnectAttempts < maxReconnectAttempts else {
             print("Max reconnect attempts reached")
             return
@@ -106,6 +116,7 @@ final class WebSocketService: NSObject {
 
         reconnectAttempts += 1
         let delay = Double(reconnectAttempts) * 2.0
+        print("Attempting reconnect #\(reconnectAttempts) in \(delay)s")
 
         reconnectTask = Task { @MainActor in
             try? await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
@@ -119,6 +130,10 @@ final class WebSocketService: NSObject {
 extension WebSocketService: URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         print("WebSocket connected")
+        isConnected = true
+        hasConnectedOnce = true
+        reconnectAttempts = 0
+        onConnectionChange?(true)
     }
 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
