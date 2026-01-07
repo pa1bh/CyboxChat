@@ -20,6 +20,13 @@ final class ChatViewModel {
         set { UserDefaults.standard.set(newValue, forKey: "notificationsEnabled") }
     }
 
+    // MARK: - Saved Name (persistent)
+
+    private var savedName: String? {
+        get { UserDefaults.standard.string(forKey: "savedName") }
+        set { UserDefaults.standard.set(newValue, forKey: "savedName") }
+    }
+
     init() {
         setupWebSocket()
         notificationService.checkPermission()
@@ -51,8 +58,9 @@ final class ChatViewModel {
             self?.isConnected = connected
             if connected {
                 self?.connectionError = nil
-                // Set initial name to get ackName with our identity
-                self?.webSocket.send(.setName(name: self?.currentName ?? "Anonymous"))
+                // Use saved name if available, otherwise "Anonymous"
+                let nameToUse = self?.savedName ?? "Anonymous"
+                self?.webSocket.send(.setName(name: nameToUse))
                 self?.requestUsers()
             } else {
                 // Clear users on disconnect
@@ -133,6 +141,7 @@ final class ChatViewModel {
 
         case .ackName(let ackMsg):
             currentName = ackMsg.name
+            savedName = ackMsg.name  // Persist for next app launch
 
         case .status(let statusMsg):
             serverStatus = statusMsg
