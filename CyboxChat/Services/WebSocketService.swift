@@ -18,15 +18,14 @@ final class WebSocketService: NSObject {
     private var reconnectAttempts = 0
     private let maxReconnectAttempts = 5
     private var reconnectTask: Task<Void, Never>?
+    private var connectTimeoutTask: Task<Void, Never>?
     private var intentionalDisconnect = false
     private var hasConnectedOnce = false
+    private let connectTimeout: TimeInterval = 5
 
     override init() {
         super.init()
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForResource = 5  // 5 seconds to connect
-        config.timeoutIntervalForRequest = 5
-        session = URLSession(configuration: config, delegate: self, delegateQueue: .main)
+        session = URLSession(configuration: .default, delegate: self, delegateQueue: .main)
     }
 
     func connect() {
@@ -37,11 +36,31 @@ final class WebSocketService: NSObject {
         webSocket?.resume()
         // Don't set isConnected here - wait for delegate callback
         receiveMessage()
+        startConnectTimeout()
+    }
+
+    private func startConnectTimeout() {
+        connectTimeoutTask?.cancel()
+        connectTimeoutTask = Task { @MainActor in
+            try? await Task.sleep(nanoseconds: UInt64(connectTimeout * 1_000_000_000))
+            if !Task.isCancelled && !isConnected && !intentionalDisconnect {
+                print("Connection timeout after \(connectTimeout)s")
+                webSocket?.cancel(with: .goingAway, reason: nil)
+                webSocket = nil
+                onConnectionError?(serverHost)
+            }
+        }
+    }
+
+    private func cancelConnectTimeout() {
+        connectTimeoutTask?.cancel()
+        connectTimeoutTask = nil
     }
 
     func disconnect() {
         intentionalDisconnect = true
         reconnectTask?.cancel()
+        cancelConnectTimeout()
         reconnectAttempts = maxReconnectAttempts // Prevent auto-reconnect
         webSocket?.cancel(with: .normalClosure, reason: nil)
         webSocket = nil
@@ -138,6 +157,7 @@ final class WebSocketService: NSObject {
 extension WebSocketService: URLSessionWebSocketDelegate {
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         print("WebSocket connected")
+        cancelConnectTimeout()
         isConnected = true
         hasConnectedOnce = true
         reconnectAttempts = 0
