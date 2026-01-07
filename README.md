@@ -8,6 +8,8 @@ A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), bui
 - **AI integration** - Ask questions using `/ai <prompt>`
 - **User list** - See who's online
 - **Server status** - View uptime, user count, and performance metrics
+- **Ping latency** - Test connection with color-coded latency display
+- **Configurable server** - Connect to any compatible WebSocket server
 - **Auto-reconnect** - Automatically reconnects on connection loss
 - **Tab navigation** - Clean UI with Chat, Users, and Settings tabs
 - **Push notifications** - Get notified of new messages (configurable)
@@ -83,7 +85,7 @@ CyboxChat/
 
 ## Protocol
 
-Connects to `wss://chat.cybox.io/ws` using JSON messages:
+Connects to `wss://chat.cybox.io/ws` by default (configurable in Settings). Uses JSON messages:
 
 ### Client → Server
 
@@ -94,6 +96,7 @@ Connects to `wss://chat.cybox.io/ws` using JSON messages:
 | `listUsers` | Request user list |
 | `status` | Request server status |
 | `ai` | Ask AI a question |
+| `ping` | Test connection latency |
 
 ### Server → Client
 
@@ -105,6 +108,7 @@ Connects to `wss://chat.cybox.io/ws` using JSON messages:
 | `listUsers` | User list response |
 | `status` | Server metrics |
 | `ai` | AI response |
+| `pong` | Ping response |
 | `error` | Error message |
 
 ## Usage
@@ -112,6 +116,8 @@ Connects to `wss://chat.cybox.io/ws` using JSON messages:
 - **Send message**: Type in the text field and tap send
 - **Ask AI**: Type `/ai <your question>`
 - **Change name**: Go to Settings → Change Name
+- **Change server**: Settings → Change Server
+- **Test latency**: Settings → Ping (when connected)
 - **View users**: Tap the Users tab
 - **Server status**: Settings → Refresh Status
 - **Notifications**: Settings → Enable Notifications
