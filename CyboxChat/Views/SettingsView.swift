@@ -37,6 +37,13 @@ struct SettingsView: View {
                         Text("Permission required to receive notifications")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                    } else {
+                        Button("Send Test Notification") {
+                            NotificationService.shared.sendNotification(
+                                title: "Test",
+                                body: "Als je dit ziet werken notificaties!"
+                            )
+                        }
                     }
                 }
 
