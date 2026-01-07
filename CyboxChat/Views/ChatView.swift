@@ -52,11 +52,15 @@ struct ChatView: View {
                 .padding()
                 .background(Color(.systemBackground))
             }
-            .navigationTitle("Chat")
+            .navigationTitle("chat.cybox.io")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    CyboxLogo()
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     ConnectionIndicator(isConnected: viewModel.isConnected)
+                        .padding(.trailing, 4)
                 }
             }
             .overlay {
@@ -82,11 +86,26 @@ struct ChatView: View {
     }
 }
 
+struct CyboxLogo: View {
+    var body: some View {
+        ZStack {
+            Text("C")
+                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .foregroundStyle(.primary)
+            Circle()
+                .fill(Color.accentColor)
+                .frame(width: 5, height: 5)
+                .offset(x: 8, y: -6)
+        }
+        .frame(width: 24, height: 24)
+    }
+}
+
 struct ConnectionIndicator: View {
     let isConnected: Bool
 
     var body: some View {
-        HStack(spacing: 4) {
+        HStack(spacing: 6) {
             Circle()
                 .fill(isConnected ? .green : .red)
                 .frame(width: 8, height: 8)
@@ -94,6 +113,7 @@ struct ConnectionIndicator: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
+        .padding(.horizontal, 8)
     }
 }
 
