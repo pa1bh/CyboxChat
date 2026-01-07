@@ -42,6 +42,11 @@ Key message types:
 - `listUsers` → populates Users tab
 - `status` → server metrics for Settings
 
+Additional information can be found in the server documentation on Github
+- https://github.com/pa1bh/chatserver/blob/main/README.md
+- https://github.com/pa1bh/chatserver/blob/main/REQUIREMENTS.md
+- https://github.com/pa1bh/chatserver/blob/main/AGENTS.md
+
 ### UI Structure
 
 `ContentView` contains a `TabView` with three tabs:
