@@ -24,7 +24,12 @@ final class ChatViewModel {
         webSocket.onConnectionChange = { [weak self] connected in
             self?.isConnected = connected
             if connected {
+                // Set initial name to get ackName with our identity
+                self?.webSocket.send(.setName(name: self?.currentName ?? "Anonymous"))
                 self?.requestUsers()
+            } else {
+                // Clear users on disconnect
+                self?.users = []
             }
         }
     }

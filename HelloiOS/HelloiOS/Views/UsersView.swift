@@ -36,6 +36,11 @@ struct UsersView: View {
                     )
                 }
             }
+            .onAppear {
+                if viewModel.isConnected {
+                    viewModel.requestUsers()
+                }
+            }
         }
     }
 }
