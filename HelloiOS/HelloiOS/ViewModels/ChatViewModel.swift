@@ -4,6 +4,7 @@ import SwiftUI
 @Observable
 final class ChatViewModel {
     private let webSocket = WebSocketService()
+    private let notificationService = NotificationService.shared
 
     var messages: [DisplayMessage] = []
     var users: [User] = []
@@ -11,9 +12,22 @@ final class ChatViewModel {
     var isConnected: Bool = false
     var serverStatus: StatusMessage?
     var errorMessage: String?
+    var notificationsEnabled: Bool {
+        get { UserDefaults.standard.bool(forKey: "notificationsEnabled") }
+        set { UserDefaults.standard.set(newValue, forKey: "notificationsEnabled") }
+    }
 
     init() {
         setupWebSocket()
+        notificationService.checkPermission()
+    }
+
+    func requestNotificationPermission() {
+        notificationService.requestPermission()
+    }
+
+    var notificationsAuthorized: Bool {
+        notificationService.isAuthorized
     }
 
     private func setupWebSocket() {
@@ -85,6 +99,13 @@ final class ChatViewModel {
         switch message {
         case .chat(let chatMsg):
             messages.append(.chat(chatMsg))
+            // Send notification for messages from others
+            if notificationsEnabled && chatMsg.from != currentName {
+                notificationService.sendNotification(
+                    title: chatMsg.from,
+                    body: chatMsg.text
+                )
+            }
 
         case .system(let sysMsg):
             messages.append(.system(sysMsg))

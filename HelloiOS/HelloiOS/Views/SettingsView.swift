@@ -23,6 +23,23 @@ struct SettingsView: View {
                     }
                 }
 
+                // Notifications Section
+                Section("Notifications") {
+                    Toggle("Enable Notifications", isOn: Binding(
+                        get: { viewModel.notificationsEnabled },
+                        set: { viewModel.notificationsEnabled = $0 }
+                    ))
+
+                    if !viewModel.notificationsAuthorized {
+                        Button("Allow Notifications") {
+                            viewModel.requestNotificationPermission()
+                        }
+                        Text("Permission required to receive notifications")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+
                 // Connection Section
                 Section("Connection") {
                     HStack {
