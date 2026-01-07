@@ -31,29 +31,7 @@ struct SettingsView: View {
                     }
                 }
 
-                // Notifications Section
-                Section("Notifications") {
-                    Toggle("Enable Notifications", isOn: Binding(
-                        get: { viewModel.notificationsEnabled },
-                        set: { viewModel.notificationsEnabled = $0 }
-                    ))
 
-                    if !viewModel.notificationsAuthorized {
-                        Button("Allow Notifications") {
-                            viewModel.requestNotificationPermission()
-                        }
-                        Text("Permission required to receive notifications")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                    } else {
-                        Button("Send Test Notification") {
-                            NotificationService.shared.sendNotification(
-                                title: "Test",
-                                body: "Als je dit ziet werken notificaties!"
-                            )
-                        }
-                    }
-                }
 
                 // Connection Section
                 Section("Connection") {
@@ -69,6 +47,10 @@ struct SettingsView: View {
                         showingServerAlert = true
                     }
 
+                }
+
+                // Server Status Section
+                Section("Server Status") {
                     HStack {
                         Text("Status")
                         Spacer()
@@ -103,10 +85,8 @@ struct SettingsView: View {
                             viewModel.connect()
                         }
                     }
-                }
 
-                // Server Status Section
-                Section("Server Status") {
+                    
                     if let status = viewModel.serverStatus {
                         StatusRow(label: "Uptime", value: formatUptime(status.uptimeSeconds))
                         StatusRow(label: "Users Online", value: "\(status.userCount)")
@@ -114,7 +94,7 @@ struct SettingsView: View {
                         StatusRow(label: "Messages/sec", value: String(format: "%.1f", status.messagesPerSecond))
                         StatusRow(label: "Memory", value: String(format: "%.1f MB", status.memoryMb))
                     } else {
-                        Text("No status available")
+                        Text("Refresh status to get details")
                             .foregroundStyle(.secondary)
                     }
 
@@ -122,6 +102,30 @@ struct SettingsView: View {
                         viewModel.requestStatus()
                     }
                     .disabled(!viewModel.isConnected)
+                }
+                
+                // Notifications Section
+                Section("Notifications") {
+                    Toggle("Enable Notifications", isOn: Binding(
+                        get: { viewModel.notificationsEnabled },
+                        set: { viewModel.notificationsEnabled = $0 }
+                    ))
+
+                    if !viewModel.notificationsAuthorized {
+                        Button("Allow Notifications") {
+                            viewModel.requestNotificationPermission()
+                        }
+                        Text("Permission required to receive notifications")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Button("Send Test Notification") {
+                            NotificationService.shared.sendNotification(
+                                title: "Test",
+                                body: "Als je dit ziet werken notificaties!"
+                            )
+                        }
+                    }
                 }
 
                 // Help Section
