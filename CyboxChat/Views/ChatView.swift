@@ -88,16 +88,15 @@ struct ChatView: View {
 
 struct CyboxLogo: View {
     var body: some View {
-        ZStack {
+        ZStack(alignment: .topTrailing) {
             Text("C")
-                .font(.system(size: 16, weight: .bold, design: .rounded))
+                .font(.system(size: 22, weight: .bold, design: .rounded))
                 .foregroundStyle(.primary)
             Circle()
                 .fill(Color.accentColor)
-                .frame(width: 5, height: 5)
-                .offset(x: 8, y: -6)
+                .frame(width: 6, height: 6)
+                .offset(x: 2, y: 2)
         }
-        .frame(width: 24, height: 24)
     }
 }
 
