@@ -62,14 +62,14 @@ final class NotificationService: NSObject, UNUserNotificationCenterDelegate {
 
     // MARK: - UNUserNotificationCenterDelegate
 
-    // Show notifications even when app is in foreground
+    // Don't show notifications when app is in foreground
     func userNotificationCenter(
         _ center: UNUserNotificationCenter,
         willPresent notification: UNNotification,
         withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
     ) {
-        // Show banner, play sound, and update badge even in foreground
-        completionHandler([.banner, .sound])
+        // Don't show banner when app is open - user is already looking at the chat
+        completionHandler([])
     }
 
     // Handle notification tap
