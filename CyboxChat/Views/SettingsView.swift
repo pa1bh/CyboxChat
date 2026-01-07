@@ -68,6 +68,19 @@ struct SettingsView: View {
                     }
 
                     if viewModel.isConnected {
+                        HStack {
+                            Button("Ping") {
+                                viewModel.ping()
+                            }
+                            Spacer()
+                            if let latency = viewModel.pingLatency {
+                                Text("\(latency) ms")
+                                    .foregroundStyle(latency < 100 ? .green : latency < 300 ? .orange : .red)
+                            }
+                        }
+                    }
+
+                    if viewModel.isConnected {
                         Button("Disconnect", role: .destructive) {
                             viewModel.disconnect()
                         }

@@ -12,6 +12,8 @@ final class ChatViewModel {
     var isConnected: Bool = false
     var serverStatus: StatusMessage?
     var errorMessage: String?
+    var pingLatency: Int?  // in milliseconds
+    private var pingStartTime: Date?
     var notificationsEnabled: Bool {
         get { UserDefaults.standard.bool(forKey: "notificationsEnabled") }
         set { UserDefaults.standard.set(newValue, forKey: "notificationsEnabled") }
@@ -90,6 +92,8 @@ final class ChatViewModel {
     }
 
     func ping() {
+        pingStartTime = Date()
+        pingLatency = nil
         webSocket.send(.ping(token: UUID().uuidString))
     }
 
@@ -122,8 +126,11 @@ final class ChatViewModel {
             users = userList.users
 
         case .pong:
-            // Could calculate latency here
-            break
+            if let startTime = pingStartTime {
+                let latency = Date().timeIntervalSince(startTime) * 1000
+                pingLatency = Int(latency)
+                pingStartTime = nil
+            }
 
         case .ai(let aiMsg):
             messages.append(.ai(aiMsg))
