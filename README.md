@@ -39,7 +39,7 @@ A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), bui
 
 ### Option 1: Xcode
 
-1. Open `CyboxChat/CyboxChat.xcodeproj`
+1. Open `CyboxChat.xcodeproj`
 2. Select a simulator (e.g., iPhone 16 Pro)
 3. Press `Cmd + R` to build and run
 
@@ -47,13 +47,13 @@ A native iOS chat client for [cbxchat](https://github.com/pa1bh/chatserver), bui
 
 ```bash
 # Build
-xcodebuild -project CyboxChat/CyboxChat.xcodeproj \
+xcodebuild -project CyboxChat.xcodeproj \
   -target CyboxChat \
   -sdk iphonesimulator \
   -configuration Debug build
 
 # Install and run on booted simulator
-xcrun simctl install booted CyboxChat/build/Debug-iphonesimulator/CyboxChat.app
+xcrun simctl install booted build/Debug-iphonesimulator/CyboxChat.app
 xcrun simctl launch booted com.cybox.cyboxchat
 ```
 
@@ -62,6 +62,8 @@ xcrun simctl launch booted com.cybox.cyboxchat
 ```
 CyboxChat/
 ├── CyboxChat.xcodeproj/
+├── README.md
+├── .gitignore
 └── CyboxChat/
     ├── CyboxChatApp.swift         # App entry point
     ├── ContentView.swift          # TabView container
