@@ -49,6 +49,22 @@ Key message types:
 2. **UsersView** - Online users list, refreshes on appear and join/leave events.
 3. **SettingsView** - Profile, notifications toggle, connection status, server stats.
 
+## Versioning
+
+Two version numbers in Xcode:
+- **MARKETING_VERSION** (CFBundleShortVersionString): User-facing version (1.0.1)
+- **CURRENT_PROJECT_VERSION** (CFBundleVersion): Build number (1, 2, 3...)
+
+Displayed in Settings as "1.0.1 (3)" meaning version 1.0.1, build 3.
+
+```bash
+# Bump version (run before release)
+./scripts/bump-version.sh patch   # 1.0.0 -> 1.0.1
+./scripts/bump-version.sh minor   # 1.0.1 -> 1.1.0
+./scripts/bump-version.sh major   # 1.1.0 -> 2.0.0
+./scripts/bump-version.sh build   # increment build number only
+```
+
 ## Bundle Info
 
 - Bundle ID: `com.cybox.cyboxchat`
